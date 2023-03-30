@@ -38,6 +38,7 @@ class HumanPlayer(Player):
         self.__field.place_ships(ships_and_their_locations)
 
     def attack(self, enemy: Player):
+        # Implemented in service for now
         pass
 
     def get_field(self):
@@ -64,6 +65,7 @@ class ComputerPlayer(Player):
         self.__field.place_ships(ships_and_correct_random_positions)
 
     def attack(self, enemy: HumanPlayer):
+        # Implemented in service for now
         pass
 
     def get_field(self):

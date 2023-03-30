@@ -4,6 +4,7 @@ from src.domain.field import Field
 from src.domain.fleet import Fleet
 from src.ui.console_ui import ConsoleUI
 from src.observer.observer import UIObserver
+from src.data.constants import DEFAULT_BOARD_SIZE
 
 
 class BattleshipsGame:
@@ -12,24 +13,25 @@ class BattleshipsGame:
         ROWS_INDEX = 0
         COLUMNS_INDEX = 1
 
-        ui = ConsoleUI()
-        ui_observer = UIObserver(ui)
-
-        board_size = ui.custom_user_board_size()
-        if board_size is None:
-            return
-
         human_fleet = Fleet()
         computer_fleet = Fleet()
 
-        human_field = Field(board_size[ROWS_INDEX], board_size[COLUMNS_INDEX], human_fleet)
-        computer_field = Field(board_size[ROWS_INDEX], board_size[COLUMNS_INDEX], computer_fleet)
+        human_field = Field(DEFAULT_BOARD_SIZE, DEFAULT_BOARD_SIZE, human_fleet)
+        computer_field = Field(DEFAULT_BOARD_SIZE, DEFAULT_BOARD_SIZE, computer_fleet)
 
         human = HumanPlayer(human_field, human_fleet)
         computer = ComputerPlayer(computer_field, computer_fleet)
 
         game = GameLogic(human, computer)
+
+        ui = ConsoleUI(game)
+        ui_observer = UIObserver(ui)
         game.attach_observer(ui_observer)
+
+        # board_size = ui.custom_user_board_size()
+        # if board_size is None:
+        #     return
+
 
         # Ship placement phase
         ui.display_field(human_field)

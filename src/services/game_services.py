@@ -2,7 +2,7 @@ from src.domain.player import HumanPlayer, ComputerPlayer
 from src.observer.subject import GameSubject
 from src.data.constants import *
 from src.data.observer_codes import *
-from src.exceptions.errors import AttackError
+from src.exceptions.errors import ConvertStringToCoordinatesError
 
 
 class GameLogic(GameSubject):
@@ -174,3 +174,26 @@ class GameLogic(GameSubject):
             pass
 
         self.__human_attack = not self.__human_attack
+
+    @staticmethod
+    def convert_string_to_coordinates(coordinates_as_string: str):
+        CHARACTER_INDEX = 0
+        number_index = None
+        for i in range(0, len(coordinates_as_string)):
+            if coordinates_as_string[i].isnumeric():
+                number_index = i
+                break
+        if number_index is None:
+            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
+
+        if len(coordinates_as_string) < 2:
+            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
+        if not coordinates_as_string[CHARACTER_INDEX].isalpha():
+            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
+        number_part = coordinates_as_string[number_index:]
+        for number_as_character in number_part:
+            if not number_as_character.isnumeric():
+                raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
+        vertical_coordinate = ord(coordinates_as_string[CHARACTER_INDEX].upper()) - ord('A')
+        horizontal_coordinate = int(number_part) - HEADER_VERTICAL_FIELD_DEVIATION
+        return horizontal_coordinate, vertical_coordinate

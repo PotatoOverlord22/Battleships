@@ -1,11 +1,12 @@
 from src.data.constants import *
 from src.exceptions.errors import ConvertStringToCoordinatesError
 from src.data.observer_codes import *
+from src.services.game_services import GameLogic
 
 
 class ConsoleUI:
-    def __init__(self):
-        pass
+    def __init__(self, game_service: GameLogic):
+        self.__game = game_service
 
     @staticmethod
     def display_start_message():
@@ -38,7 +39,7 @@ class ConsoleUI:
         print("Your turn to strike! Try and attack an enemy position!")
         user_string_coordinates = self.read_user_input()
         try:
-            user_correct_coordinates = self.convert_string_to_coordinates(user_string_coordinates)
+            user_correct_coordinates = self.__game.convert_string_to_coordinates(user_string_coordinates)
         except ConvertStringToCoordinatesError as ConvertError:
             print(ConvertError)
             return
@@ -71,31 +72,9 @@ class ConsoleUI:
             return False
         print("Unknown option.")
 
-    def display_invalid_locations_message(self):
-        print("Ships do not have valid locations. Ship locations might overlap or are outside the field.")
-
     @staticmethod
-    def convert_string_to_coordinates(coordinates_as_string: str):
-        CHARACTER_INDEX = 0
-        number_index = None
-        for i in range(0, len(coordinates_as_string)):
-            if coordinates_as_string[i].isnumeric():
-                number_index = i
-                break
-        if number_index == None:
-            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
-
-        if len(coordinates_as_string) < 2:
-            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
-        if not coordinates_as_string[CHARACTER_INDEX].isalpha():
-            raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
-        number_part = coordinates_as_string[number_index:]
-        for number_as_character in number_part:
-            if not number_as_character.isnumeric():
-                raise ConvertStringToCoordinatesError("Incorrect coordinate format.")
-        vertical_coordinate = ord(coordinates_as_string[CHARACTER_INDEX].upper()) - ord('A')
-        horizontal_coordinate = int(number_part) - HEADER_VERTICAL_FIELD_DEVIATION
-        return horizontal_coordinate, vertical_coordinate
+    def display_invalid_locations_message():
+        print("Ships do not have valid locations. Ship locations might overlap or are outside the field.")
 
     def ask_user_for_specific_ship_location(self, ship_name, ship_size):
         print(f'place {ship_name} (size is {ship_size} consecutive squares): ')
@@ -106,7 +85,7 @@ class ConsoleUI:
         converted_coordinates = []
         for coordinates in user_raw_coordinates.split(" "):
             try:
-                correct_coordinate = self.convert_string_to_coordinates(coordinates)
+                correct_coordinate = self.__game.convert_string_to_coordinates(coordinates)
             except ConvertStringToCoordinatesError as ConvertError:
                 print(ConvertError)
                 return
